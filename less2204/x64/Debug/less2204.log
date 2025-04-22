@@ -1,0 +1,13 @@
+﻿  main.cpp
+C:\Users\Admin\source\repos\less2204\less2204\main.cpp(40,21): warning C4566: character represented by universal-character-name '\u274C' cannot be represented in the current code page (1251)
+C:\Users\Admin\source\repos\less2204\less2204\main.cpp(59,21): warning C4566: character represented by universal-character-name '\U0001F44B' cannot be represented in the current code page (1251)
+C:\Users\Admin\source\repos\less2204\less2204\main.cpp(63,21): warning C4566: character represented by universal-character-name '\u26A0' cannot be represented in the current code page (1251)
+C:\Users\Admin\source\repos\less2204\less2204\main.cpp(63,21): warning C4566: character represented by universal-character-name '\uFE0F' cannot be represented in the current code page (1251)
+  less2204.vcxproj -> C:\Users\Admin\source\repos\less2204\x64\Debug\less2204.exe
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
+  AuthorizationManager check failed.
+      + CategoryInfo          : SecurityError: (:) [], ParentContainsErrorRecordException
+      + FullyQualifiedErrorId : UnauthorizedAccess
+  я╗┐
+D:\vcpkg\scripts\buildsystems\msbuild\vcpkg.targets(247,5): warning : [vcpkg] Failed to gather app local DLL dependencies, program may not run. Set VcpkgApplocalDeps to false in your project file to suppress this warning. PowerShell arguments: -ExecutionPolicy Bypass -noprofile -File "D:\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\Users\Admin\source\repos\less2204\x64\Debug\less2204.exe" "D:\vcpkg\installed\x64-windows\debug\bin" "x64\Debug\less2204.tlog\less2204.write.1u.tlog" "x64\Debug\vcpkg.applocal.log"
