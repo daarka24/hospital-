@@ -1,15 +1,27 @@
 #pragma once
-#include <queue>
 #include <string>
+#include <queue>
+#include <iostream>
 #include "Patient.h"
 
-struct Doctor {
-    std::string surname;
-    std::string name;
-    std::string specialization;
-    std::queue<Patient> q;
+using namespace std;
 
-    std::string toString() const {
-        return specialization + " — " + surname + " " + name;
+class Doctor {
+public:
+    string name;
+    string surname;
+    string specialization;
+    queue<Patient> q;
+
+    Doctor(string s, string n, string sp)
+        : surname(s), name(n), specialization(sp) {
+    }
+
+    void addPatient(const Patient& p) {
+        q.push(p);
+    }
+
+    int getQueueSize() const {
+        return q.size();
     }
 };

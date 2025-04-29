@@ -1,23 +1,23 @@
 #include "QueueManager.h"
 #include <iostream>
 #include <fstream>
-#include <future>
-#include <chrono>
 #include <limits>
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
 void listDoctors(const vector<Doctor>& doctors) {
     cout << "\nСписок лікарів:\n";
     for (size_t i = 0; i < doctors.size(); ++i) {
-        cout << i + 1 << ". " << doctors[i].toString() << "\n";
+        cout << i + 1 << ". " << doctors[i].name << " (" << doctors[i].specialization << ")\n";
     }
 }
 
 void showQueues(const vector<Doctor>& doctors) {
     cout << "\nПоточний стан черг:\n";
     for (const auto& doc : doctors) {
-        cout << doc.toString() << ": " << doc.q.size() << " пацієнтів\n";
+        cout << doc.name << " (" << doc.specialization << "): " << doc.q.size() << " пацієнтів\n";
     }
 }
 
@@ -28,7 +28,8 @@ void addPatient(vector<Doctor>& doctors, int& patientCounter) {
     }
     listDoctors(doctors);
     cout << "Виберіть номер лікаря: ";
-    int choice; cin >> choice;
+    int choice;
+    cin >> choice;
     if (choice < 1 || choice > static_cast<int>(doctors.size())) {
         cout << "Невірний номер!\n";
         return;
@@ -43,53 +44,55 @@ void addPatient(vector<Doctor>& doctors, int& patientCounter) {
     p.id = patientCounter++;
 
     doc.q.push(p);
-    cout << "Пацієнта додано до черги №" << p.id << " до " << doc.toString() << "\n";
+    cout << "Пацієнта додано до черги \u2116" << p.id << " до " << doc.name << "\n";
 }
 
-void processPatient(const Patient& p, const string& doctor,
-    vector<Patient>& treated,
-    vector<Patient>& untreated)
-{
-    cout << "\nВиклик: " << p.toString() << " до " << doctor << "\n";
-    cout << "Очікування 5 секунд... натисніть Enter, якщо пацієнт присутній.\n" << flush;
+void waitTimer(int seconds) {
+    for (int i = seconds; i > 0; --i) {
+        cout << i << "... " << flush;
+        this_thread::sleep_for(chrono::seconds(1));
+    }
+    cout << endl;
+}
 
-    auto inputFuture = async(launch::async, []() {
-        string s;
-        getline(cin, s);
-        return s;
-        });
+void processPatient(Patient& p, const string& doctor,
+    vector<Patient>& treated, vector<Patient>& untreated) {
 
-    if (inputFuture.wait_for(chrono::seconds(5)) == future_status::ready) {
+    cout << "\nВиклик: " << p.name << " до " << doctor << "\n";
+    cout << "Очікування пацієнта:\n";
+    waitTimer(5);
+
+    cout << "Пацієнт прийшов? (1 - так, інше - ні): ";
+    string response;
+    getline(cin, response);
+
+    if (response == "1") {
         treated.push_back(p);
     }
     else {
-        cout << "Час вийшов, наступний пацієнт.\n";
         untreated.push_back(p);
     }
 }
 
-void processPatients(vector<Doctor>& doctors,
-    vector<Patient>& treated,
-    vector<Patient>& untreated)
-{
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
+void processPatients(vector<Doctor>& doctors, vector<Patient>& treated, vector<Patient>& untreated) {
     for (auto& doc : doctors) {
-        cout << "\nЧерга до " << doc.toString() << ":\n";
+        cout << "\nЧерга до " << doc.name << " (" << doc.specialization << "):\n";
         while (!doc.q.empty()) {
             Patient p = doc.q.front();
-            processPatient(p, doc.toString(), treated, untreated);
             doc.q.pop();
+            processPatient(p, doc.name, treated, untreated);
         }
     }
 }
 
-void saveResults(const vector<Patient>& treated,
-    const vector<Patient>& untreated)
-{
+void saveResults(const vector<Patient>& treated, const vector<Patient>& untreated) {
     ofstream f1("treated.txt");
     ofstream f2("untreated.txt");
-    for (auto& p : treated)   f1 << p.toString() << "\n";
-    for (auto& p : untreated) f2 << p.toString() << "\n";
+    for (const auto& p : treated) {
+        f1 << "Пацієнт: " << p.name << " (ID: " << p.id << ")\n";
+    }
+    for (const auto& p : untreated) {
+        f2 << "Пацієнт: " << p.name << " (ID: " << p.id << ")\n";
+    }
     cout << "Результати збережено.\n";
 }
